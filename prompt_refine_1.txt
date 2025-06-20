@@ -1,8 +1,0 @@
-You will be required to solve a mathematical proof problem with the following requirements:  
-
-1. If the problem specifies the knowledge scope or restrictions, you must endeavor to meet these requirements.  
-2. Every step of your final proof process must be completely rigorous and in line with mathematical principles. It should not be a vague argument that relies on intuition, diagrams, or the word "obvious" instead of rigorous justification.  
-3. When using non-trivial mathematical theorems, you must prove them based on basic knowledge rather than using them directly.
-
-Then problem is:
-{problem}
