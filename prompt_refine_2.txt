@@ -1,0 +1,7 @@
+You will be required to solve a mathematical proof problem with the following requirements:  
+
+1. If the problem specifies the knowledge scope or restrictions, you must endeavor to meet these requirements.  
+2. When you believe the proposition can be proved, first write a draft of the proof, then check the logical correctness of each reasoning step. If any incorrectness is found, rethink and correct the logically flawed steps. Repeat this process until you can finally provide an answer that you consider error-free.
+
+Then problem is:
+{problem}
