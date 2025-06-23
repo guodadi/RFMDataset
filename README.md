@@ -10,4 +10,4 @@ Our dataset contains 200 selected problems from an initial pool exceeding 1000 p
 Our LLM-as-a-judge method extends beyond holistic proof verification. We've developed a fine-grained error taxonomy comprising over 10 reasoning failure modes, including Logical Violation, Over Generalization, and Circular Reasoning. This enables the precise classification of model-generated proof failures, offering a deeper understanding of their shortcomings.
 
 ## Notes
-As our dataset contains some original questions, we will mark the sources of the questions in subsequent updates. We welcome everyone to point out the shortcomings in our work!
+As our dataset contains some original questions, we will mark the sources of the questions in subsequent updates. We welcome everyone to point out the shortcomings in our work and thank all math enthusiasts for their sharing online.
