@@ -5,7 +5,7 @@ Large reasoning models (e.g., R1, o3) have demonstrated remarkable mathematical 
 
 ## RFMDataset
 Our dataset contains 200 selected problems from an initial pool exceeding 1000 problems. The problems are stratified by knowledge level, encompassing junior high school (52 problems), senior high school (88 problems), and undergraduate curricula (60 problems). Furthermore, the dataset covers nine distinct mathematical subjects, including but not limited to geometry, trigonometry, number sequence, calculus, and probability. To assess nuanced reasoning capabilities, problems within each knowledge level are assigned one of four ascending difficulty levels (1 to 4) manually.
-![knowledge distribution](images/knowledge_distribution_new.pdf "The knowledge distribution of RFMDataset")
+![knowledge distribution](RFMDataset/images/knowledge_distribution_new.pdf "The knowledge distribution of RFMDataset")
 ## Evaluation
 Our LLM-as-a-judge method extends beyond holistic proof verification. We've developed a fine-grained error taxonomy comprising over 10 reasoning failure modes, including Logical Violation, Over Generalization, and Circular Reasoning. This enables the precise classification of model-generated proof failures, offering a deeper understanding of their shortcomings.
 
