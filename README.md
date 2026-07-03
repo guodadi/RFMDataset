@@ -58,31 +58,36 @@ python scripts/parse_latex.py raw.tex -o problems.json
 
 ## Running LLM-as-a-Judge Evaluation
 
-The evaluation code uses OpenAI-compatible chat-completion APIs. Credentials are read only from environment variables; no API keys are stored in the repository. Copy `.env.example` to `.env` or export variables in your shell.
-
-Example with the OpenAI API:
+The evaluation code uses OpenAI-compatible chat-completion APIs, but the repository does not provide API keys, vendor presets, or default endpoint URLs. Set both the API key and base URL yourself, either through the default environment variables below or through custom environment variable names passed to the CLI.
 
 ```bash
-export OPENAI_API_KEY=...
+export RFM_MODEL_API_KEY=...
+export RFM_MODEL_BASE_URL=https://your-model-endpoint.example/v1
+export RFM_JUDGE_API_KEY=...
+export RFM_JUDGE_BASE_URL=https://your-judge-endpoint.example/v1
+
 python scripts/run_evaluation.py \
-  --model o1 \
-  --judge-model gpt-4.1 \
-  --model-client openai \
-  --judge-client openai \
+  --model your-model \
+  --judge-model your-judge \
   --answers-dir answers \
   --output-dir outputs/judgements
 ```
 
-Example with a generic OpenAI-compatible gateway:
+If you want to use different environment variable names:
 
 ```bash
-export OPENAI_COMPATIBLE_API_KEY=...
-export OPENAI_COMPATIBLE_BASE_URL=https://your-endpoint.example/v1
+export MY_MODEL_KEY=...
+export MY_MODEL_URL=https://your-model-endpoint.example/v1
+export MY_JUDGE_KEY=...
+export MY_JUDGE_URL=https://your-judge-endpoint.example/v1
+
 python scripts/run_evaluation.py \
   --model your-model \
   --judge-model your-judge \
-  --model-client openai-compatible \
-  --judge-client openai-compatible
+  --model-api-key-env MY_MODEL_KEY \
+  --model-base-url-env MY_MODEL_URL \
+  --judge-api-key-env MY_JUDGE_KEY \
+  --judge-base-url-env MY_JUDGE_URL
 ```
 
 Generated outputs are written under `outputs/` by default and are intentionally ignored by Git.

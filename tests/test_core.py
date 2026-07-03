@@ -2,6 +2,7 @@ import unittest
 
 from rfmdataset.data import load_problems
 from rfmdataset.evaluation import calc_accuracy, parse_proof_evaluation
+from rfmdataset.llm import GPTChatter, MissingCredentialError
 from rfmdataset.summary import dataset_summary
 
 
@@ -50,6 +51,14 @@ class CoreTests(unittest.TestCase):
             calc_accuracy(labels),
             {"ms": 0.5, "hs": 1.0, "ug": 0.0, "overall": 2 / 3},
         )
+
+    def test_llm_requires_user_supplied_endpoint(self) -> None:
+        with self.assertRaises(MissingCredentialError):
+            GPTChatter(
+                "dummy-model",
+                api_key="dummy-key",
+                base_url_env="RFM_TEST_BASE_URL_THAT_SHOULD_NOT_EXIST",
+            )
 
 
 if __name__ == "__main__":

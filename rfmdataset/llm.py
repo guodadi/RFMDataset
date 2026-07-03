@@ -4,29 +4,9 @@ from __future__ import annotations
 
 import concurrent.futures
 import os
-from dataclasses import dataclass
 from typing import Iterable
 
 from openai import OpenAI
-
-
-@dataclass(frozen=True)
-class ClientConfig:
-    """Configuration for an OpenAI-compatible endpoint."""
-
-    api_key_env: str
-    base_url_env: str | None = None
-    default_base_url: str | None = None
-    model_aliases: dict[str, str] | None = None
-
-
-CLIENT_CONFIGS: dict[str, ClientConfig] = {
-    "openai": ClientConfig("OPENAI_API_KEY", "OPENAI_BASE_URL"),
-    "deepseek": ClientConfig("DEEPSEEK_API_KEY", "DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
-    "dashscope": ClientConfig("DASHSCOPE_API_KEY", "DASHSCOPE_BASE_URL"),
-    "openai-compatible": ClientConfig("OPENAI_COMPATIBLE_API_KEY", "OPENAI_COMPATIBLE_BASE_URL"),
-    "local": ClientConfig("LOCAL_API_KEY", "LOCAL_BASE_URL", "http://127.0.0.1:8000/v1"),
-}
 
 
 class MissingCredentialError(RuntimeError):
@@ -36,42 +16,37 @@ class MissingCredentialError(RuntimeError):
 class GPTChatter:
     """Batch chat-completion helper.
 
-    Credentials are read from environment variables only. This keeps the
-    repository safe to publish and makes endpoints configurable by users.
+    The repository does not ship endpoint presets. Users provide both the
+    API key and the base URL through environment variables or constructor
+    arguments, which keeps credentials and routing choices outside the code.
     """
 
     def __init__(
         self,
         model_name: str,
-        client: str = "openai",
         *,
+        api_key_env: str = "RFM_API_KEY",
+        base_url_env: str = "RFM_BASE_URL",
         api_key: str | None = None,
         base_url: str | None = None,
         max_workers: int = 8,
     ) -> None:
-        if client not in CLIENT_CONFIGS:
-            known = ", ".join(sorted(CLIENT_CONFIGS))
-            raise ValueError(f"Unknown client '{client}'. Known clients: {known}")
-
-        config = CLIENT_CONFIGS[client]
-        self.model_name = (config.model_aliases or {}).get(model_name, model_name)
+        self.model_name = model_name
         self.max_workers = max_workers
 
-        resolved_key = api_key or os.getenv(config.api_key_env)
+        resolved_key = api_key or os.getenv(api_key_env)
         if not resolved_key:
             raise MissingCredentialError(
-                f"Missing API key. Set {config.api_key_env} or pass api_key explicitly."
+                f"Missing API key. Set {api_key_env} or pass api_key explicitly."
             )
 
-        resolved_base_url = (
-            base_url
-            or (os.getenv(config.base_url_env) if config.base_url_env else None)
-            or config.default_base_url
-        )
-        kwargs = {"api_key": resolved_key}
-        if resolved_base_url:
-            kwargs["base_url"] = resolved_base_url
-        self.client = OpenAI(**kwargs)
+        resolved_base_url = base_url or os.getenv(base_url_env)
+        if not resolved_base_url:
+            raise MissingCredentialError(
+                f"Missing base URL. Set {base_url_env} or pass base_url explicitly."
+            )
+
+        self.client = OpenAI(api_key=resolved_key, base_url=resolved_base_url)
 
     def get_llm_response(
         self,
