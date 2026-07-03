@@ -8,7 +8,23 @@ This is the official repository for the paper "Mathematical Proof as a Litmus Te
 
 Large reasoning models (for example, R1 and o3) have shown strong mathematical problem-solving ability on many popular benchmarks. However, aggregate accuracy on numerical-answer datasets can hide deeper issues such as benchmark leakage, incomplete reasoning, hallucinated proof steps, and invalid local deductions.
 
-RFMDataset uses mathematical proofs as a diagnostic setting. The benchmark focuses on fine-grained failure analysis rather than only final-answer correctness. Our evaluation identifies more than 10 reasoning error patterns, including Logical Violation, Over Generalization, Circular Reasoning, Hidden Assumption, Vague Argument, and Incomplete Proof.
+RFMDataset uses mathematical proofs as a diagnostic setting. The benchmark focuses on fine-grained failure analysis rather than only final-answer correctness. Our evaluation identifies more than 10 reasoning error patterns, including Logic Violation, Over Generalization, Circular Reasoning, Hidden Assumption, Vague Argument, and Incomplete Proof.
+
+The failure-mode taxonomy used by the judge is summarized below:
+
+| Category | Definition | Illustrative Example |
+| --- | --- | --- |
+| Transformation Error | Recasting the target statement into a non-equivalent or strictly weaker one, so a proof no longer addresses the real goal. | To show a series `sum a_n` converges, proving only `lim_{n->infty} a_n = 0`; or replacing `A <=> B` with the easier `A => B`. |
+| Over Generalization | Drawing a universal conclusion from only a few special cases or situations. | Verifying the claim for `n = 1, 3, 5` and then declaring it true for all positive integers. |
+| Invalid Construction | Presenting an object that either cannot exist under the stated conditions or fails the required properties. | Claiming a function is everywhere linear yet nowhere differentiable; or defining `f(x) = 1/x` on all real numbers without addressing `x = 0`. |
+| Wrong Division | Partitioning into cases that miss at least one legitimate possibility or overlap each other. | For a function's behavior, dividing cases as always positive, always zero, and always negative. |
+| Circular Reasoning | Using the desired conclusion, or an equivalent reformulation, as an explicit or hidden premise. | To prove `A => B`, using premises that implicitly assume `B`. |
+| Logic Violation | A single deduction step contradicts logical or algebraic rules. | From `a < b` and `c < d`, concluding `a - c < b - d`, which is false when `c` and `d` are negative. |
+| Hidden Assumption | Applying theorems or operations whose hypotheses have not been established or stated. | Differentiating a function known only to be continuous; or interchanging a limit and an integral without proving uniform convergence. |
+| Boundary Neglect | Ignoring edge cases, endpoints, or limiting situations so the proof works only in the middle. | Declaring `f(x) = sqrt(x)` differentiable on `[0, 1]` without checking `x = 0`. |
+| Vague Argument | Relying on intuition, diagrams, or the word obvious rather than rigorous justification. | Claiming a series obviously converges because the terms get smaller, or that a diagram makes two segments equal. |
+| Incomplete Proof | Omitting an essential component in a proof, or providing an unfinished proof. | Proving sufficiency but not necessity; or writing an induction hypothesis without showing how `P(k)` implies `P(k + 1)`. |
+| Others | Any error type not covered by the categories above. | - |
 
 ## Dataset
 
