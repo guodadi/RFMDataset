@@ -180,6 +180,20 @@ print(judgement_accuracy("judgements/o1_gemini-2.5-pro-preview-0506_all.json"))
 
 Some problems are original. We will continue to mark and refine problem sources in subsequent updates. We welcome feedback and issue reports.
 
+## Citation
+
+If you use RFMDataset in your research, please cite:
+
+```bibtex
+@inproceedings{guo2026mathematical,
+  title={Mathematical proof as a litmus test: Revealing failure modes of advanced large reasoning models},
+  author={Guo, Dadi and Liu, Jiayu and Fan, Zhiyuan and He, Zhitao and Li, Haoran and Li, Yuxin and Wang, Yumeng and Fung, Yi R},
+  booktitle={Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  pages={12764--12804},
+  year={2026}
+}
+```
+
 ## License
 
 This repository is released under the MIT License. See [LICENSE](LICENSE).
