@@ -22,7 +22,7 @@ RFMDataset contains 200 selected proof problems from an initial pool of more tha
 
 The dataset covers nine mathematical subjects, including geometry, trigonometry, number sequence, calculus, probability, algebra, set theory, number theory, and combinatorics. Each problem is manually assigned one of four difficulty levels.
 
-<img src="images/knowledge_distribution_new_00.jpg" alt="knowledge distribution" width="50%">
+<img src="images/knowledge_distribution_new_00.jpg" alt="RFMDataset knowledge distribution" width="65%">
 
 ## Evaluation
 
