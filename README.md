@@ -4,6 +4,8 @@ RFMDataset (Reveal Failure Modes) is a benchmark for evaluating mathematical pro
 
 This is the official repository for the paper "Mathematical Proof as a Litmus Test: Revealing Failure Modes of Advanced Large Reasoning Models".
 
+Paper: [arXiv:2506.17114](https://arxiv.org/abs/2506.17114)
+
 ## Overview
 
 Large reasoning models (for example, R1 and o3) have shown strong mathematical problem-solving ability on many popular benchmarks. However, aggregate accuracy on numerical-answer datasets can hide deeper issues such as benchmark leakage, incomplete reasoning, hallucinated proof steps, and invalid local deductions.
@@ -12,39 +14,113 @@ RFMDataset uses mathematical proofs as a diagnostic setting. The benchmark focus
 
 The failure-mode taxonomy used by the judge is summarized below:
 
-| Category | Definition | Illustrative Example |
-| --- | --- | --- |
-| Transformation Error | Recasting the target statement into a non-equivalent or strictly weaker one, so a proof no longer addresses the real goal. | To show a series `sum a_n` converges, proving only `lim_{n->infty} a_n = 0`; or replacing `A <=> B` with the easier `A => B`. |
-| Over Generalization | Drawing a universal conclusion from only a few special cases or situations. | Verifying the claim for `n = 1, 3, 5` and then declaring it true for all positive integers. |
-| Invalid Construction | Presenting an object that either cannot exist under the stated conditions or fails the required properties. | Claiming a function is everywhere linear yet nowhere differentiable; or defining `f(x) = 1/x` on all real numbers without addressing `x = 0`. |
-| Wrong Division | Partitioning into cases that miss at least one legitimate possibility or overlap each other. | For a function's behavior, dividing cases as always positive, always zero, and always negative. |
-| Circular Reasoning | Using the desired conclusion, or an equivalent reformulation, as an explicit or hidden premise. | To prove `A => B`, using premises that implicitly assume `B`. |
-| Logic Violation | A single deduction step contradicts logical or algebraic rules. | From `a < b` and `c < d`, concluding `a - c < b - d`, which is false when `c` and `d` are negative. |
-| Hidden Assumption | Applying theorems or operations whose hypotheses have not been established or stated. | Differentiating a function known only to be continuous; or interchanging a limit and an integral without proving uniform convergence. |
-| Boundary Neglect | Ignoring edge cases, endpoints, or limiting situations so the proof works only in the middle. | Declaring `f(x) = sqrt(x)` differentiable on `[0, 1]` without checking `x = 0`. |
-| Vague Argument | Relying on intuition, diagrams, or the word obvious rather than rigorous justification. | Claiming a series obviously converges because the terms get smaller, or that a diagram makes two segments equal. |
-| Incomplete Proof | Omitting an essential component in a proof, or providing an unfinished proof. | Proving sufficiency but not necessity; or writing an induction hypothesis without showing how `P(k)` implies `P(k + 1)`. |
-| Others | Any error type not covered by the categories above. | - |
+<table align="center">
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Definition</th>
+      <th>Illustrative Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Transformation Error</td>
+      <td>Recasting the target statement into a non-equivalent or strictly weaker one, so a proof no longer addresses the real goal.</td>
+      <td>To show a series <code>sum a_n</code> converges, proving only <code>lim_{n-&gt;infty} a_n = 0</code>; or replacing <code>A &lt;=&gt; B</code> with the easier <code>A =&gt; B</code>.</td>
+    </tr>
+    <tr>
+      <td>Over Generalization</td>
+      <td>Drawing a universal conclusion from only a few special cases or situations.</td>
+      <td>Verifying the claim for <code>n = 1, 3, 5</code> and then declaring it true for all positive integers.</td>
+    </tr>
+    <tr>
+      <td>Invalid Construction</td>
+      <td>Presenting an object that either cannot exist under the stated conditions or fails the required properties.</td>
+      <td>Claiming a function is everywhere linear yet nowhere differentiable; or defining <code>f(x) = 1/x</code> on all real numbers without addressing <code>x = 0</code>.</td>
+    </tr>
+    <tr>
+      <td>Wrong Division</td>
+      <td>Partitioning into cases that miss at least one legitimate possibility or overlap each other.</td>
+      <td>For a function's behavior, dividing cases as always positive, always zero, and always negative.</td>
+    </tr>
+    <tr>
+      <td>Circular Reasoning</td>
+      <td>Using the desired conclusion, or an equivalent reformulation, as an explicit or hidden premise.</td>
+      <td>To prove <code>A =&gt; B</code>, using premises that implicitly assume <code>B</code>.</td>
+    </tr>
+    <tr>
+      <td>Logic Violation</td>
+      <td>A single deduction step contradicts logical or algebraic rules.</td>
+      <td>From <code>a &lt; b</code> and <code>c &lt; d</code>, concluding <code>a - c &lt; b - d</code>, which is false when <code>c</code> and <code>d</code> are negative.</td>
+    </tr>
+    <tr>
+      <td>Hidden Assumption</td>
+      <td>Applying theorems or operations whose hypotheses have not been established or stated.</td>
+      <td>Differentiating a function known only to be continuous; or interchanging a limit and an integral without proving uniform convergence.</td>
+    </tr>
+    <tr>
+      <td>Boundary Neglect</td>
+      <td>Ignoring edge cases, endpoints, or limiting situations so the proof works only in the middle.</td>
+      <td>Declaring <code>f(x) = sqrt(x)</code> differentiable on <code>[0, 1]</code> without checking <code>x = 0</code>.</td>
+    </tr>
+    <tr>
+      <td>Vague Argument</td>
+      <td>Relying on intuition, diagrams, or the word obvious rather than rigorous justification.</td>
+      <td>Claiming a series obviously converges because the terms get smaller, or that a diagram makes two segments equal.</td>
+    </tr>
+    <tr>
+      <td>Incomplete Proof</td>
+      <td>Omitting an essential component in a proof, or providing an unfinished proof.</td>
+      <td>Proving sufficiency but not necessity; or writing an induction hypothesis without showing how <code>P(k)</code> implies <code>P(k + 1)</code>.</td>
+    </tr>
+    <tr>
+      <td>Others</td>
+      <td>Any error type not covered by the categories above.</td>
+      <td>-</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Dataset
 
 RFMDataset contains 200 selected proof problems from an initial pool of more than 1000 problems. The released problems are stratified by knowledge level:
 
-| Level | Count |
-| --- | ---: |
-| Junior high school (`ms`) | 52 |
-| Senior high school (`hs`) | 88 |
-| Undergraduate (`ug`) | 60 |
+<table align="center">
+  <thead>
+    <tr>
+      <th>Level</th>
+      <th>Count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Junior high school (<code>ms</code>)</td>
+      <td align="right">52</td>
+    </tr>
+    <tr>
+      <td>Senior high school (<code>hs</code>)</td>
+      <td align="right">88</td>
+    </tr>
+    <tr>
+      <td>Undergraduate (<code>ug</code>)</td>
+      <td align="right">60</td>
+    </tr>
+  </tbody>
+</table>
 
 The dataset covers nine mathematical subjects, including geometry, trigonometry, number sequence, calculus, probability, algebra, set theory, number theory, and combinatorics. Each problem is manually assigned one of four difficulty levels.
 
-<img src="images/knowledge_distribution_new_00.jpg" alt="RFMDataset knowledge distribution" width="65%">
+<p align="center">
+  <img src="images/knowledge_distribution_new_00.jpg" alt="RFMDataset knowledge distribution" width="65%">
+</p>
 
 ## Evaluation
 
 The evaluation method uses an LLM-as-a-judge prompt that goes beyond holistic proof verification. For each proof, the judge produces a binary label for each error pattern and an overall correctness label.
 
-<img src="images/RFMDataset_00.jpg" alt="RFMDataset" width="90%">
+<p align="center">
+  <img src="images/RFMDataset_00.jpg" alt="RFMDataset" width="90%">
+</p>
 
 The expected judgement block has the following structure:
 
@@ -70,28 +146,66 @@ The expected judgement block has the following structure:
 
 The main evaluation shows that even advanced reasoning models still struggle with proof generation in RFMDataset. The highlighted cells indicate the strongest results within each column.
 
-<img src="images/rfm_main_results_table.png" alt="main RFMDataset accuracy results" width="90%">
+<p align="center">
+  <img src="images/rfm_main_results_table.png" alt="main RFMDataset accuracy results" width="90%">
+</p>
 
 The failure-mode analysis shows that models frequently suffer from logical violations, incomplete proofs, vague arguments, and hidden assumptions. The right heatmap reports model accuracy across mathematical domains.
 
-<img src="images/rfm_error_patterns.png" alt="RFMDataset error pattern and domain analysis" width="95%">
+<p align="center">
+  <img src="images/rfm_error_patterns.png" alt="RFMDataset error pattern and domain analysis" width="95%">
+</p>
 
 We also evaluate model-specific self-reflection prompts. Reflection can improve selected models on some subsets, but the gains are not uniform across models or difficulty levels.
 
-<img src="images/rfm_reflection_results_table.png" alt="self-reflection results on RFMDataset" width="90%">
+<p align="center">
+  <img src="images/rfm_reflection_results_table.png" alt="self-reflection results on RFMDataset" width="90%">
+</p>
 
 ## Repository Contents
 
-| Path | Description |
-| --- | --- |
-| `data/` | The 200 proof problems grouped by knowledge level. |
-| `answers/` | Published model answers used in the evaluation. |
-| `judgements/` | Published LLM-as-a-judge outputs. |
-| `prompt/` | Prompts used for proof evaluation and refinement. |
-| `images/` | Figures used in this README and the paper. |
-| `rfmdataset/` | Reusable Python package for loading data, parsing judgements, and running evaluation. |
-| `scripts/` | Command-line helpers built on top of `rfmdataset`. |
-| `tests/` | Lightweight tests for data loading and evaluation parsing. |
+<table align="center">
+  <thead>
+    <tr>
+      <th>Path</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>data/</code></td>
+      <td>The 200 proof problems grouped by knowledge level.</td>
+    </tr>
+    <tr>
+      <td><code>answers/</code></td>
+      <td>Published model answers used in the evaluation.</td>
+    </tr>
+    <tr>
+      <td><code>judgements/</code></td>
+      <td>Published LLM-as-a-judge outputs.</td>
+    </tr>
+    <tr>
+      <td><code>prompt/</code></td>
+      <td>Prompts used for proof evaluation and refinement.</td>
+    </tr>
+    <tr>
+      <td><code>images/</code></td>
+      <td>Figures used in this README and the paper.</td>
+    </tr>
+    <tr>
+      <td><code>rfmdataset/</code></td>
+      <td>Reusable Python package for loading data, parsing judgements, and running evaluation.</td>
+    </tr>
+    <tr>
+      <td><code>scripts/</code></td>
+      <td>Command-line helpers built on top of <code>rfmdataset</code>.</td>
+    </tr>
+    <tr>
+      <td><code>tests/</code></td>
+      <td>Lightweight tests for data loading and evaluation parsing.</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Installation
 
