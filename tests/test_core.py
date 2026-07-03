@@ -1,8 +1,9 @@
 import unittest
+from unittest import mock
 
 from rfmdataset.data import load_problems
 from rfmdataset.evaluation import calc_accuracy, parse_proof_evaluation
-from rfmdataset.llm import GPTChatter, MissingCredentialError
+from rfmdataset.llm import GPTChatter, InvalidRequestConfigError, MissingCredentialError
 from rfmdataset.summary import dataset_summary
 
 
@@ -59,6 +60,30 @@ class CoreTests(unittest.TestCase):
                 api_key="dummy-key",
                 base_url_env="RFM_TEST_BASE_URL_THAT_SHOULD_NOT_EXIST",
             )
+
+    def test_llm_extra_body_comes_from_json_env(self) -> None:
+        with mock.patch.dict(
+            "os.environ",
+            {"RFM_TEST_EXTRA_BODY": '{"thinking":{"type":"disabled"}}'},
+            clear=False,
+        ):
+            client = GPTChatter(
+                "dummy-model",
+                api_key="dummy-key",
+                base_url="https://example.com/v1",
+                extra_body_env="RFM_TEST_EXTRA_BODY",
+            )
+        self.assertEqual(client.extra_body, {"thinking": {"type": "disabled"}})
+
+    def test_llm_extra_body_rejects_invalid_json(self) -> None:
+        with mock.patch.dict("os.environ", {"RFM_TEST_EXTRA_BODY": "not-json"}, clear=False):
+            with self.assertRaises(InvalidRequestConfigError):
+                GPTChatter(
+                    "dummy-model",
+                    api_key="dummy-key",
+                    base_url="https://example.com/v1",
+                    extra_body_env="RFM_TEST_EXTRA_BODY",
+                )
 
 
 if __name__ == "__main__":

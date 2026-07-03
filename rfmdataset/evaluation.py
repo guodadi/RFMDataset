@@ -95,8 +95,10 @@ class ProofEvaluator:
         *,
         model_api_key_env: str = "RFM_MODEL_API_KEY",
         model_base_url_env: str = "RFM_MODEL_BASE_URL",
+        model_extra_body_env: str | None = "RFM_MODEL_EXTRA_BODY",
         judge_api_key_env: str = "RFM_JUDGE_API_KEY",
         judge_base_url_env: str = "RFM_JUDGE_BASE_URL",
+        judge_extra_body_env: str | None = "RFM_JUDGE_EXTRA_BODY",
         project_root: str | Path | None = None,
     ) -> None:
         self.root = Path(project_root) if project_root else repo_root()
@@ -107,11 +109,13 @@ class ProofEvaluator:
             model_name=model_name,
             api_key_env=model_api_key_env,
             base_url_env=model_base_url_env,
+            extra_body_env=model_extra_body_env,
         )
         self.judge_model_client = GPTChatter(
             model_name=judge_model_name,
             api_key_env=judge_api_key_env,
             base_url_env=judge_base_url_env,
+            extra_body_env=judge_extra_body_env,
         )
 
     def generate_answers(self, *, batch_size: int = 1, output_dir: str | Path | None = None) -> Path:
@@ -215,8 +219,10 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--judge-model", required=True, help="Judge model name.")
     parser.add_argument("--model-api-key-env", default="RFM_MODEL_API_KEY")
     parser.add_argument("--model-base-url-env", default="RFM_MODEL_BASE_URL")
+    parser.add_argument("--model-extra-body-env", default="RFM_MODEL_EXTRA_BODY")
     parser.add_argument("--judge-api-key-env", default="RFM_JUDGE_API_KEY")
     parser.add_argument("--judge-base-url-env", default="RFM_JUDGE_BASE_URL")
+    parser.add_argument("--judge-extra-body-env", default="RFM_JUDGE_EXTRA_BODY")
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--answers-dir", default="answers")
     parser.add_argument("--output-dir", default="outputs/judgements")
@@ -227,8 +233,10 @@ def main(argv: list[str] | None = None) -> None:
         args.judge_model,
         model_api_key_env=args.model_api_key_env,
         model_base_url_env=args.model_base_url_env,
+        model_extra_body_env=args.model_extra_body_env,
         judge_api_key_env=args.judge_api_key_env,
         judge_base_url_env=args.judge_base_url_env,
+        judge_extra_body_env=args.judge_extra_body_env,
     )
     path = evaluator.evaluate_answers(
         answers_dir=args.answers_dir,

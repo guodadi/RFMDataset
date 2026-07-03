@@ -14,7 +14,7 @@ def repo_root() -> Path:
 
 
 def read_json(path: str | Path) -> Any:
-    with Path(path).open("r", encoding="utf-8") as file:
+    with Path(path).open("r", encoding="utf-8-sig") as file:
         return json.load(file)
 
 

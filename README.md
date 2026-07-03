@@ -265,6 +265,13 @@ export RFM_JUDGE_API_KEY=...
 export RFM_JUDGE_BASE_URL=https://your-judge-endpoint.example/v1
 ```
 
+Provider-specific OpenAI-compatible request fields can be passed as JSON through optional `EXTRA_BODY` environment variables. For example, DeepSeek V4 thinking can be disabled with:
+
+```bash
+export RFM_MODEL_EXTRA_BODY='{"thinking":{"type":"disabled"}}'
+export RFM_JUDGE_EXTRA_BODY='{"thinking":{"type":"disabled"}}'
+```
+
 Then run evaluation on a published answer file:
 
 ```bash
@@ -280,16 +287,20 @@ If you prefer different environment variable names, pass them explicitly:
 ```bash
 export MY_MODEL_KEY=...
 export MY_MODEL_URL=https://your-model-endpoint.example/v1
+export MY_MODEL_EXTRA='{"thinking":{"type":"disabled"}}'
 export MY_JUDGE_KEY=...
 export MY_JUDGE_URL=https://your-judge-endpoint.example/v1
+export MY_JUDGE_EXTRA='{"thinking":{"type":"disabled"}}'
 
 python scripts/run_evaluation.py \
   --model your-model \
   --judge-model your-judge \
   --model-api-key-env MY_MODEL_KEY \
   --model-base-url-env MY_MODEL_URL \
+  --model-extra-body-env MY_MODEL_EXTRA \
   --judge-api-key-env MY_JUDGE_KEY \
-  --judge-base-url-env MY_JUDGE_URL
+  --judge-base-url-env MY_JUDGE_URL \
+  --judge-extra-body-env MY_JUDGE_EXTRA
 ```
 
 Generated files are written under `outputs/` by default and are ignored by Git.
