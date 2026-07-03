@@ -1,42 +1,94 @@
 # RFMDataset
 
-## Background
-Large reasoning models (e.g., R1, o3) have demonstrated remarkable mathematical problem-solving abilities. However, the high reported accuracy of these advanced models on popular datasets, reliance on purely numerical evaluation and potential benchmark leakage, often masks their true reasoning shortcomings. To address this, we propose leveraging the inherent rigor and methodological complexity of mathematical proofs as a diagnostic tool to expose these hidden failures. Specifically, we introduce the RFMDataset (Reveal Failure Modes), a collection of 200 diverse mathematical proof problems, and thoroughly evaluate advanced models' performance on it. Our in-depth analysis of their failures uncovers 10 fine-grained error types, which shows fundamental limitations in current large reasoning models: 1) large reasoning models grapple profoundly with mathematical proofs, with some generating entirely correct proofs for less than 20\% of problems and failing even on basic ones; 2) models exhibit a diverse spectrum of reasoning failures, prominently demonstrating the lack of guarantees for the correctness and rigor of single-step reasoning; and 3) models show hallucination and incompleteness during the reasoning process. Our findings reveal that models' self-reflection is insufficient to resolve the current logical dilemmas, necessitating formalized and fine-grained logical training.
+RFMDataset (Reveal Failure Modes) is a benchmark for evaluating mathematical proof reasoning in large reasoning models. It contains 200 proof problems, published model answers, LLM-as-a-judge outputs, prompts, and reusable code for loading the data and reproducing the evaluation workflow.
 
-## RFMDataset
-Our dataset contains 200 selected problems from an initial pool exceeding 1000 problems. The problems are stratified by knowledge level, encompassing junior high school (52 problems), senior high school (88 problems), and undergraduate curricula (60 problems). Furthermore, the dataset covers nine distinct mathematical subjects, including but not limited to geometry, trigonometry, number sequence, calculus, and probability. To assess nuanced reasoning capabilities, problems within each knowledge level are assigned one of four ascending difficulty levels (1 to 4) manually.
+This is the official repository for the paper "Mathematical Proof as a Litmus Test: Revealing Failure Modes of Advanced Large Reasoning Models".
+
+## Overview
+
+Large reasoning models (for example, R1 and o3) have shown strong mathematical problem-solving ability on many popular benchmarks. However, aggregate accuracy on numerical-answer datasets can hide deeper issues such as benchmark leakage, incomplete reasoning, hallucinated proof steps, and invalid local deductions.
+
+RFMDataset uses mathematical proofs as a diagnostic setting. The benchmark focuses on fine-grained failure analysis rather than only final-answer correctness. Our evaluation identifies more than 10 reasoning error patterns, including Logical Violation, Over Generalization, Circular Reasoning, Hidden Assumption, Vague Argument, and Incomplete Proof.
+
+## Dataset
+
+RFMDataset contains 200 selected proof problems from an initial pool of more than 1000 problems. The released problems are stratified by knowledge level:
+
+| Level | Count |
+| --- | ---: |
+| Junior high school (`ms`) | 52 |
+| Senior high school (`hs`) | 88 |
+| Undergraduate (`ug`) | 60 |
+
+The dataset covers nine mathematical subjects, including geometry, trigonometry, number sequence, calculus, probability, algebra, set theory, number theory, and combinatorics. Each problem is manually assigned one of four difficulty levels.
+
 <img src="images/knowledge_distribution_new_00.jpg" alt="knowledge distribution" width="50%">
+
 ## Evaluation
-Our LLM-as-a-judge method extends beyond holistic proof verification. We've developed a fine-grained error taxonomy comprising over 10 reasoning failure modes, including Logical Violation, Over Generalization, and Circular Reasoning. This enables the precise classification of model-generated proof failures, offering a deeper understanding of their shortcomings.
+
+The evaluation method uses an LLM-as-a-judge prompt that goes beyond holistic proof verification. For each proof, the judge produces a binary label for each error pattern and an overall correctness label.
+
 <img src="images/RFMDataset_00.jpg" alt="RFMDataset" width="90%">
-## Notes
-As our dataset contains some original questions, we will mark the sources of the questions in subsequent updates. We welcome everyone to point out the shortcomings in our work and thank all math enthusiasts for their sharing online.
+
+The expected judgement block has the following structure:
+
+```markdown
+### Error Pattern Analysis
+- Transformation Error: 1|0
+- Over Generalization: 1|0
+- Invalid Construction: 1|0
+- Wrong Division: 1|0
+- Circular Reasoning: 1|0
+- Logic Violation: 1|0
+- Hidden Assumption: 1|0
+- Boundary Neglect: 1|0
+- Vague Argument: 1|0
+- Incomplete Proof: 1|0
+- Others: 1|0
+
+### Overall Correctness
+- 1|0
+```
 
 ## Repository Contents
 
-- `data/`: the 200 proof problems grouped by knowledge level.
-- `answers/`: published model answers.
-- `judgements/`: published LLM-as-a-judge outputs.
-- `prompt/`: prompts used for refinement and proof evaluation.
-- `rfmdataset/`: reusable Python utilities for loading data, parsing judgements, and running evaluation.
-- `scripts/`: command-line helpers built on top of `rfmdataset`.
+| Path | Description |
+| --- | --- |
+| `data/` | The 200 proof problems grouped by knowledge level. |
+| `answers/` | Published model answers used in the evaluation. |
+| `judgements/` | Published LLM-as-a-judge outputs. |
+| `prompt/` | Prompts used for proof evaluation and refinement. |
+| `images/` | Figures used in this README and the paper. |
+| `rfmdataset/` | Reusable Python package for loading data, parsing judgements, and running evaluation. |
+| `scripts/` | Command-line helpers built on top of `rfmdataset`. |
+| `tests/` | Lightweight tests for data loading and evaluation parsing. |
 
 ## Installation
 
+Use Python 3.10 or newer.
+
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-For development and tests:
+On Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+For development checks:
 
 ```bash
 pip install -r requirements-dev.txt
 python -m unittest discover -s tests
 ```
 
-## Quick Checks
+## Quick Start
 
 Print dataset statistics:
 
@@ -58,14 +110,20 @@ python scripts/parse_latex.py raw.tex -o problems.json
 
 ## Running LLM-as-a-Judge Evaluation
 
-The evaluation code uses OpenAI-compatible chat-completion APIs, but the repository does not provide API keys, vendor presets, or default endpoint URLs. Set both the API key and base URL yourself, either through the default environment variables below or through custom environment variable names passed to the CLI.
+The evaluation code calls OpenAI-compatible chat-completion APIs. The repository intentionally does not provide API keys, vendor presets, or default endpoint URLs. Users must provide both the API key and the base URL.
+
+Set the default environment variables:
 
 ```bash
 export RFM_MODEL_API_KEY=...
 export RFM_MODEL_BASE_URL=https://your-model-endpoint.example/v1
 export RFM_JUDGE_API_KEY=...
 export RFM_JUDGE_BASE_URL=https://your-judge-endpoint.example/v1
+```
 
+Then run evaluation on a published answer file:
+
+```bash
 python scripts/run_evaluation.py \
   --model your-model \
   --judge-model your-judge \
@@ -73,7 +131,7 @@ python scripts/run_evaluation.py \
   --output-dir outputs/judgements
 ```
 
-If you want to use different environment variable names:
+If you prefer different environment variable names, pass them explicitly:
 
 ```bash
 export MY_MODEL_KEY=...
@@ -90,4 +148,24 @@ python scripts/run_evaluation.py \
   --judge-base-url-env MY_JUDGE_URL
 ```
 
-Generated outputs are written under `outputs/` by default and are intentionally ignored by Git.
+Generated files are written under `outputs/` by default and are ignored by Git.
+
+## Python Usage
+
+```python
+from rfmdataset import __version__
+from rfmdataset.data import load_problems
+from rfmdataset.summary import dataset_summary, judgement_accuracy
+
+problems = load_problems("data")
+print(dataset_summary("data"))
+print(judgement_accuracy("judgements/o1_gemini-2.5-pro-preview-0506_all.json"))
+```
+
+## Notes
+
+Some problems are original. We will continue to mark and refine problem sources in subsequent updates. We welcome feedback and issue reports.
+
+## License
+
+This repository is released under the MIT License. See [LICENSE](LICENSE).
