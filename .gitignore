@@ -1,0 +1,53 @@
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local intermediate data and experiment outputs
+outputs/
+json_data/
+json_data_updated/
+raw_latex_data/
+pred_label/
+error_level/
+acc_tokens_per_model/
+count_tokens/
+check_data/
+data_review_for_zhiyuan_prj/
+human_eval/
+RFM_save/
+1/
+
+# Generated archives and figures. Existing tracked assets remain tracked.
+*.zip
+*.png
+*.pdf
+*.html
+*.pptx

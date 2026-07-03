@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rfmdataset"
+version = "0.1.0"
+description = "Utilities and evaluation scripts for RFMDataset."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = [
+  "openai>=1.40.0",
+  "tqdm>=4.66.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["rfmdataset*"]
+
+[project.scripts]
+rfm-evaluate = "rfmdataset.evaluation:main"
+rfm-parse-latex = "rfmdataset.latex_parser:main"

@@ -11,3 +11,78 @@ Our LLM-as-a-judge method extends beyond holistic proof verification. We've deve
 <img src="images/RFMDataset_00.jpg" alt="RFMDataset" width="90%">
 ## Notes
 As our dataset contains some original questions, we will mark the sources of the questions in subsequent updates. We welcome everyone to point out the shortcomings in our work and thank all math enthusiasts for their sharing online.
+
+## Repository Contents
+
+- `data/`: the 200 proof problems grouped by knowledge level.
+- `answers/`: published model answers.
+- `judgements/`: published LLM-as-a-judge outputs.
+- `prompt/`: prompts used for refinement and proof evaluation.
+- `rfmdataset/`: reusable Python utilities for loading data, parsing judgements, and running evaluation.
+- `scripts/`: command-line helpers built on top of `rfmdataset`.
+
+## Installation
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+For development and tests:
+
+```bash
+pip install -r requirements-dev.txt
+python -m unittest discover -s tests
+```
+
+## Quick Checks
+
+Print dataset statistics:
+
+```bash
+python scripts/summarize_dataset.py
+```
+
+Compute accuracy from an existing judgement file:
+
+```bash
+python scripts/summarize_judgements.py judgements/o1_gemini-2.5-pro-preview-0506_all.json
+```
+
+Parse a LaTeX source file whose problems are written as `\section*{Question ...}` blocks:
+
+```bash
+python scripts/parse_latex.py raw.tex -o problems.json
+```
+
+## Running LLM-as-a-Judge Evaluation
+
+The evaluation code uses OpenAI-compatible chat-completion APIs. Credentials are read only from environment variables; no API keys are stored in the repository. Copy `.env.example` to `.env` or export variables in your shell.
+
+Example with the OpenAI API:
+
+```bash
+export OPENAI_API_KEY=...
+python scripts/run_evaluation.py \
+  --model o1 \
+  --judge-model gpt-4.1 \
+  --model-client openai \
+  --judge-client openai \
+  --answers-dir answers \
+  --output-dir outputs/judgements
+```
+
+Example with a generic OpenAI-compatible gateway:
+
+```bash
+export OPENAI_COMPATIBLE_API_KEY=...
+export OPENAI_COMPATIBLE_BASE_URL=https://your-endpoint.example/v1
+python scripts/run_evaluation.py \
+  --model your-model \
+  --judge-model your-judge \
+  --model-client openai-compatible \
+  --judge-client openai-compatible
+```
+
+Generated outputs are written under `outputs/` by default and are intentionally ignored by Git.
