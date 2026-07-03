@@ -50,6 +50,20 @@ The expected judgement block has the following structure:
 - 1|0
 ```
 
+## Experimental Results
+
+The main evaluation shows that even advanced reasoning models still struggle with proof generation in RFMDataset. The highlighted cells indicate the strongest results within each column.
+
+<img src="images/rfm_main_results_table.png" alt="main RFMDataset accuracy results" width="90%">
+
+The failure-mode analysis shows that models frequently suffer from logical violations, incomplete proofs, vague arguments, and hidden assumptions. The right heatmap reports model accuracy across mathematical domains.
+
+<img src="images/rfm_error_patterns.png" alt="RFMDataset error pattern and domain analysis" width="95%">
+
+We also evaluate model-specific self-reflection prompts. Reflection can improve selected models on some subsets, but the gains are not uniform across models or difficulty levels.
+
+<img src="images/rfm_reflection_results_table.png" alt="self-reflection results on RFMDataset" width="90%">
+
 ## Repository Contents
 
 | Path | Description |
